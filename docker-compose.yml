@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=client_mod.settings
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_HOST=db
+      - SQL_PORT=5432
+      - SQL_USER=clientmoduser
+      - SQL_PASSWORD=clientmodpass
+      - SQL_DATABASE=clientmoddb
+    command: >
+      sh -c "python manage.py migrate && 
+             python manage.py runserver 0.0.0.0:8000"
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=clientmoduser
+      - POSTGRES_PASSWORD=clientmodpass
+      - POSTGRES_DB=clientmoddb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
